@@ -1,0 +1,10 @@
+spring:
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 1621101768@qq.com
+    password: thbgazypbfmedbga
+    properties:
+      mail:
+        smtp:
+          auth: true

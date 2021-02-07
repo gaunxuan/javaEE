@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="club.banyuan.springboot.mybatis.mapper.AdminMapper">
+    <resultMap id="adminResultMap" type="Admin">
+        <id property="id" column="Id"/>
+        <result property="username" column="UserName"/>
+        <result property="rolename" column="RoleName"/>
+        <result property="password" column="Password"/>
+    </resultMap>
+
+    <sql id="selectFields">
+        ${a}.id, ${a}.username, ${a}.rolename, ${a}.password
+    </sql>
+
+    <select id="count" resultType="Integer">
+        SELECT COUNT(1) FROM admin;
+    </select>
+
+    <select id="findAdmins" resultType="Admin">
+        SELECT
+        -- id,username,rolename,password
+        <include refid="selectFields">
+            <property name="a" value="Admin"/>
+        </include>
+        FROM Admin;
+    </select>
+
+    <select id="findPage" resultMap="adminResultMap">
+        SELECT
+        <include refid="selectFields">
+            <property name="a" value="admin"/>
+        </include>
+        FROM admin
+        <if test="username != null and username != '' ">
+            WHERE UserName LIKE concat('%', #{username}, '%')
+        </if>
+        LIMIT #{offset}, #{length}
+    </select>
+
+    <select id="findByUsername" resultType="Admin">
+        SELECT
+        <include refid="selectFields">
+            <property name="admin" value="a1"/>
+        </include>
+        FROM ADMIN a1
+        WHERE username LIKE CONCAT('%', #{username}, '%')
+        LIMIT #{offset}, #{length}
+    </select>
+
+    <select id="findById" parameterType="Integer" resultType="Admin">
+        SELECT
+        id,username,rolename,password
+        FROM admin
+        WHERE id=#{id}
+    </select>
+
+    <select id="findAdminByUsernameAndPassword" resultType="Admin">
+        SELECT
+        id,username,rolename,password
+        FROM admin
+        WHERE username=#{username} AND password=#{password}
+    </select>
+
+    <insert id="insert" parameterType="Admin" keyProperty="id" useGeneratedKeys="true" flushCache="true">
+        INSERT INTO admin(username, rolename, password)
+        VALUES(#{username}, #{rolename}, #{password})
+    </insert>
+
+    <update id="update" parameterType="Admin">
+        UPDATE admin
+        <set>
+            <if test="username != null">
+                username=#{username},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM admin
+        WHERE id IN (
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </delete>
+</mapper>
